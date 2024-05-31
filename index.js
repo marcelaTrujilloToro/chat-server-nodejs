@@ -23,7 +23,9 @@ app.use(express.static(publicPath));
 //Routas
 app.use('/api/login', require('./routes/auth'));
 
-server.listen(process.env.PORT, (err) => {
+app.use('/api/users', require('./routes/users'));
+
+server.listen(process.env.PORT, '0.0.0.0', (err) => {
   if (err) throw new Error(err);
 
   console.log('Servidor corriendo en puerto', process.env.PORT);

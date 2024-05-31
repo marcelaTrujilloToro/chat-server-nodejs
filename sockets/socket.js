@@ -1,20 +1,29 @@
+const { checkJWT } = require('../helpers/jwt');
 const { io } = require('../index');
-
+const { userConnected, userDisconnected } = require('../controllers/socket');
 
 // Mensajes de Sockets
-io.on('connection', client => {
-    console.log('Cliente conectado');
+io.on('connection', (client) => {
+  console.log('Cliente conectado');
 
-    client.on('disconnect', () => {
-        console.log('Cliente desconectado');
-    });
+  const [valid, uid] = checkJWT(client.handshake.headers['x-token']);
 
-    client.on('mensaje', ( payload ) => {
-        console.log('Mensaje', payload);
+  //verificar autenticacion
+  if (!valid) {
+    return client.disconnect();
+  }
 
-        io.emit( 'mensaje', { admin: 'Nuevo mensaje' } );
+  //Cliente autenticado
+  userConnected(uid);
 
-    });
+  client.on('disconnect', () => {
+    userDisconnected(uid);
+    console.log('Cliente desconectado');
+  });
 
+  //   client.on('mensaje', (payload) => {
+  //     console.log('Mensaje', payload);
 
+  //     io.emit('mensaje', { admin: 'Nuevo mensaje' });
+  //   });
 });

@@ -70,6 +70,7 @@ const login = async (req, res = response) => {
 };
 
 const renewToken = async (req, res = response) => {
+  console.log(req.uid);
   const uid = req.uid;
 
   const token = await generateJWT(uid);
